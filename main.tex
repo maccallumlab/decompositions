@@ -1,5 +1,530 @@
 \documentclass{article}
-\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{graphicx}% Include figure files
+\usepackage{bm}% bold math
+\usepackage{verbatim}
+\usepackage{color}
+
+
+\newcommand{\warning}[1]{{\textsf{{\textcolor{red}{{[#1]}{}}}}}}
+\let\vec\mathbf
+
 \begin{document}
-(Type your content here.)
+
+\title{A cumulant analysis of free energy decompositions}
+\author{Jason A. Wagoner and Justin L. MacCallum}
+
+\date{ \today}
+
+\maketitle
+
+\begin{abstract}
+Stuff...
+\end{abstract}
+
+\section{Introduction}
+
+\subsection{Free energy decompositions offer insight into driving forces and mechanisms.}
+
+Why are these things useful? Give examples where they give insight.
+
+
+
+
+\subsection{The interpretation of free energy decompositions faces two challenges.}
+
+Explain non-additivity. Essentially, changes to one Hamiltonian component will affect the distribution of conformations, which, in turn, affects all of the other Hamiltonian components. This is a fundamental issue inherent to free energy, in other words, it's not due to some artifact of free energy calculations and it happens in both experiment and simulation. This will always be an issue, but decompositions can still be useful for understanding driving forces, e.g. utility of alanine mutagenesis, etc. Care is required in interpretation, but these measurements are clearly valuable.
+
+Explain path-dependence. When different ways of doing a calculation give different answers, interpretation is difficult or impossible. However, we will show that this issue can be mitigated through specific analysis protocols.
+
+
+
+
+\section{Theory}
+
+\subsection{Free energy changes can be calculated by thermodynamic integration.}
+
+Consider a system with Hamiltonian $H(x, \lambda) = H_0(x) + H_1(x, \lambda) + H_2(x, \lambda)$ parameterized by a control parameter $\lambda$. The components $H_1$ and $H_2$ depend on $\lambda$ in some arbitrary way, whereas $H_0$ has no $\lambda$-dependence and is called a \emph{spectator component}. Our presentation here focuses on a the case of a single spectator component and two $\lambda$-dependent components but our results generalize to an arbitrary number of components. Hereafter, to simplify notation, we omit the $x$-dependence of the Hamiltonian and its components.
+
+The excess free energy compared to an ideal gas is:
+\begin{equation}\label{eq:dA}
+\Delta A(\lambda) = -\beta^{-1} \ln \int e^{-\beta(H_0 + H_1(\lambda) + H_2(\lambda)} dx,
+\end{equation}
+where $\beta=1/k_BT$, $k_B$ is Boltzmann's constant, and $T$ is the absolute temperature.
+
+We can compute the free energy difference between the states $\lambda=0$ and $\lambda=1$ using thermodynamic integration:
+\begin{align}
+\Delta\Delta A =& \Delta A(1) - \Delta A(0) \nonumber\\
+               =& \int_0^1 \frac{d}{d\lambda} \Delta A(\lambda) d\lambda \nonumber\\
+               =& \int_0^1 \left\langle \frac{dH(\lambda)}{d\lambda}\right\rangle_\lambda 
+                d\lambda \label{eq:TI},
+\end{align}
+where the angle brackets denote the ensemble average:
+\begin{equation}
+\left\langle f \right\rangle_\lambda = \frac
+	{\int f(x, \lambda) e^{-\beta H(\lambda)} dx}
+    {\int e^{-\beta H(\lambda)} dx}.
+\end{equation}
+
+
+
+
+\subsection{The most obvious free energy decomposition is path-dependent.}
+
+The form of Eq.~\ref{eq:TI} suggests a natural decomposition of the free energy:
+\begin{align}
+\Delta\Delta A =&
+	\int_0^1
+    	\left\langle \frac{dH_0(\lambda)}{d\lambda} +
+    	\frac{dH_1(\lambda)}{d\lambda} + 
+		\frac{dH_2(\lambda)}{d\lambda}
+        \right\rangle_\lambda d\lambda \nonumber\\
+\Delta\Delta A_0 =&
+	\int_0^1 \left\langle \frac{dH_0(\lambda)}{d\lambda}\right\rangle_\lambda d\lambda = 0 \nonumber\\          
+\Delta\Delta A_1 =&
+	\int_0^1 \left\langle \frac{dH_1(\lambda)}{d\lambda}\right\rangle_\lambda d\lambda \nonumber\\
+\Delta\Delta A_2 =&
+	\int_0^1 \left\langle \frac{dH_2(\lambda)}{d\lambda}\right\rangle_\lambda d\lambda.    
+\label{eq:naive}
+\end{align}
+However, it is known that the free energy components obtained in this way are path-dependent. $\Delta\Delta A_1$ and $\Delta\Delta A_2$ are not state functions and their value depends on the parameterization of the Hamiltonian with respect to $\lambda$. Different parameterizations will give different decompositions, even when the initial and final states are the same, which makes interpretation of such decompositions challenging.
+
+
+
+\subsection{The free energy can be expressed as a cumulant expansion.}
+
+Eq.~\ref{eq:dA} can be re-written as an ensemble average over state $\lambda$
+\begin{equation}
+\Delta A(\lambda) =
+	\beta^{-1} \ln \left\langle e^{\beta H(\lambda)} \right\rangle_\lambda.
+\label{eq:avg_expr}
+\end{equation}
+We will relate this expression to the cumulant generating function for the random variable $\beta H$, which is defined as:
+\begin{align}
+K_{\lambda}(t) =&
+	\ln \left\langle 
+    	e^{t \beta H(\lambda)}
+    \right\rangle_\lambda \\
+    =& 
+    \sum_{n=1}^{\infty}
+            	\frac{t^n}{n!}
+                \left[ \frac{d^n}{dt^n} K_{\lambda}\right]_{t=0},
+\end{align}
+where we have introduced the auxiliary variable $t$ and Maclaurin series expanded around $t=0$.
+
+The free energy is related to the cumulant generating function by:
+\begin{align}
+\Delta A(\lambda) =& \beta^{-1} K_{\lambda}(1) \nonumber\\
+                  =& \beta^{-1} \sum_{n=1}^{\infty}
+            			\frac{1}{n!}\left[
+                        	\frac{d^n}{dt^n} K_{\lambda}
+                        \right]_{t=0}.
+\end{align}
+
+The derivatives of $K_{\lambda}$ evaluated at $t=0$ are called the cumulants. The first few examples are:
+\begin{align}
+\kappa_1 &=
+	\left[\frac{d}{dt} K_{\lambda}\right]_{t=0} =
+	\beta \left\langle H \right\rangle_\lambda \nonumber\\
+\kappa_2 &=
+	\left[\frac{d^2}{dt^2} K_{\lambda}\right]_{t=0} =
+	\beta^2 \left[
+		\left\langle H^2 \right\rangle_\lambda -
+    	\left\langle H \right\rangle_\lambda^2
+    \right] \nonumber\\
+\kappa_3 &=
+	\left[\frac{d^3}{dt^3} K_{\lambda} \right]_{t=0} =
+	\beta^3 \left[
+		\left\langle H^3 \right\rangle_\lambda -
+    	3 \left\langle H^2 \right\rangle_\lambda
+    		\left\langle H \right\rangle_\lambda +
+    	2 \left\langle H \right\rangle_\lambda^3
+    \right].
+\label{eq:cumu}
+\end{align}
+
+Up to third order, the cumulants are equal to the corresponding central moments. For fourth and higher-order cumulants, this is no longer true, but the cumulants to a given order can be always be expressed as a polynomial of the moments up to the same order.
+
+
+
+
+
+\subsection{The cumulants represent the enthalpic and entropic components of the free energy.}
+
+Substituting the cumulants from Eq.~\ref{eq:cumu} into Eq.~\ref{eq:avg_expr} shows that the first cumulant is the enthalpic part of the free energy, while the sum of the remaining cumulants (including appropriate factors of $\beta^{n-1}/n!$) makes up the entropic part. This makes sense, as the enthalpy is simply the mean energy of the system, which is exactly the first cumulant. Meanwhile, the entropy depends on the ``width'' of the ensemble, which is exactly what the the higher-order cumulants characterize.
+
+Several properties of cumulants have important statistical mechanical implications. First, the cumulants are semi-invariant, meaning that $\kappa_1(X+c)=\kappa_1(X)+c$ and $\kappa_n(X+c) = \kappa_n(X)$ for some constant $c$ and $n \ge 2$. In statistical mechanics, this implies that if the energy of every microstate in a system is changed by $c$, the enthalpy also increases by $c$, whereas the entropy is unchanged. Second, the cumulants are additive $\kappa_n(X + Y) = \kappa_n(X) + \kappa_n(Y)$ when $X$ and $Y$ are independent. In statistical mechanics, this implies that for a composite system composed of independent sub-systems, the the total enthalpy or entropy is just the sum of the sub-system enthalpies or entropies.
+
+\subsection{The free energy can be decomposed using a multivariate cumulant expansion.}
+
+We can also relate Eq.~\ref{eq:avg_expr} to the multivariate cumulant generating function for the random variables $\beta H_0$, $\beta H_1$, and $\beta H_2$, defined as:
+\begin{equation}
+K_\lambda(\vec t) =
+	\ln \left\langle 
+    	e^{t_0 \beta H_0 + t_1 \beta H_1(\lambda) + t_2 \beta H_2(\lambda)}
+    \right\rangle_\lambda.
+\end{equation}
+Series expansion around $\vec t = (t_0, t_1, t_2) = 0$ gives:
+\begin{align}
+\Delta A(\lambda) =& \beta^{-1} K_\lambda(1, 1, 1) \nonumber\\
+                  =& \beta^{-1} \sum_{n=1}^{\infty}
+	        			\sum_{i,j,k}
+            			\frac{1}{i!j!k!}\left[ D_{i,j,k} K_\lambda\right]_{t=0},
+\end{align}
+where the second sum is over non-negative $i$, $j$, and $k$ such that $i + j + k = n$, and the notation $D_{i,j,k}$ means $d^{i+j+k} /(d t_0^i d t_1^j d t_2^k)$.
+
+
+\subsection{The joint cumulants capture the statistical dependence of Hamiltonian components.}
+
+The mixed partial derivatives with respect to $\vec t$ capture the statistical dependence of Hamiltonian components to a given order. For example, the second order $\kappa_{0,1,1}$ term is simply the covariance between $H_1$ and $H_2$:
+\begin{align}
+\kappa_{0, 1, 1} = [D_{0, 1, 1} K_\lambda]_{\vec t=0} =&
+	\beta^2 \left[
+    	\left\langle H_1 H_2 \right\rangle_\lambda -
+		\left\langle H_1 \right\rangle_\lambda 
+		\left\langle H_2 \right\rangle_\lambda
+    \right] \nonumber\\
+    =&
+    \beta^2 \mathrm{Cov}(H_1,H_2).              
+\end{align}
+This cumulant the difference between the actual average value of the product of $H_1$ and $H_2$ compared to that expected if $H_1$ and $H_2$ were statistically independent.
+
+Similarly, the third order cumulant, $\kappa_{1,1,1}$, captures the difference between the average product of $H_0$, $H_1$, and $H_2$ compared to what is expected if they were statistically independent:
+\begin{alignat}{3}
+\MoveEqLeft[3] [D_{1, 1, 1} K_\lambda]_{\vec t=0}\notag\\
+&= \beta^3[ &&
+\left\langle H_0 H_1 H_2 \right\rangle_\lambda -
+\left\langle H_0 H_1 \right\rangle_\lambda
+	\left\langle H_2 \right\rangle_\lambda -
+\left\langle H_0 H_2 \right\rangle_\lambda
+	\left\langle H_1 \right\rangle_\lambda - \notag\\
+&&& \left\langle H_1 H_2 \right\rangle_\lambda
+	\left\langle H_0 \right\rangle_\lambda +
+2 \left\langle H_0 \right\rangle_\lambda
+	\left\langle H_1 \right\rangle_\lambda
+	\left\langle H_2 \right\rangle_\lambda]\notag\\
+&= \beta^3[ &&
+	\left\langle H_0 H_1 H_2 \right\rangle_\lambda -
+	\mathrm{Cov}(H_0,H_1) \left\langle H_2 \right\rangle_\lambda -
+	\mathrm{Cov}(H_0,H_2) \left\langle H_1 \right\rangle_\lambda -\\
+	&&& \mathrm{Cov}(H_1,H_2) \left\langle H_0 \right\rangle_\lambda -
+	\left\langle H_0 \right\rangle_\lambda
+		\left\langle H_1 \right\rangle_\lambda
+		\left\langle H_2 \right\rangle_\lambda]        
+\end{alignat}
+This cumulant accounts for all of the ways that there can be independence, where either all three variables being independent, or where two of the variables are dependent, but the third is independent.
+
+Expressions for higher-order cumulants rapidly become more complex, but they all capture the same...
+
+\subsection{Splitting the cumulants results in a path-independent free energy decomposition.}
+
+The cumulants are state functions, so we can define path-independent free energy decompositions by splitting the cumulants between the different components:
+\begin{equation}
+\Delta A^{(u)}(\lambda) =
+	\beta^{-1} \sum_{n=1}^{\infty}
+	\sum_{i+j+k=n}
+	\frac{a_{i,j,k}^{(u)}}{i!j!k!}\left[ D_{i,j,k} K_\lambda\right]_{t=0},
+\end{equation}
+where $u$ is the component (0, 1, or 2 in our case), and $a_{i,j,k}^{(u)}$ are the splitting coefficients. The splitting coefficients divide each cumulant between the free energy components and are subject to $0 \le a_{i,j,k}^{(u)} \le 1$ and $\sum_u a_{i,j,k}^{(u)}=1$. For now, we leave the form of $a_{i,j,k}^{(u)}$ unspecified, but below we show that a particular form naturally emerges.
+
+The free energy components can be evaluated by thermodynamic integration:
+\begin{align}
+\Delta\Delta A^{(u)} =& \Delta A^{(u)}(1) - \Delta A^{(u)}(0) \nonumber \\
+					 =&
+	\beta^{-1} \int_0^1 \sum_{n=1}^{\infty}
+	\sum_{i+j+k=n}
+	\frac{a_{i,j,k}^{(u)}}{i!j!k!}
+    \left[ D_{i,j,k} \frac{dK_\lambda}{d\lambda}\right]_{t=0} d\lambda
+    \label{eq:split}.
+\end{align}
+Eq.~\ref{eq:split} is an infinite series, but below we show that, in certain cases, most of the terms cancel leaving a finite expression. In other cases, we will be able to partially correct a path-dependent free energy decomposition by correctly splitting the low order cumulants, while leaving a path-dependent splitting of the higher-order terms.
+
+Evaluating the derivative of the cumulant generating function with respect to $\lambda$ gives:
+\begin{equation}
+K_\lambda' = 
+\frac{dK_\lambda}{d\lambda} =
+	\beta t_1 \left\langle H_1' \right\rangle_{\vec t,\lambda} -
+    \beta \left\langle H_1' \right\rangle_{\vec t,\lambda} +
+    \beta t_2 \left\langle H_2' \right\rangle_{\vec t,\lambda} -
+    \beta \left\langle H_2' \right\rangle_{\vec t,\lambda} + \ldots
+\end{equation}
+where we have dropped terms with no $\vec t$-dependence that will disappear in subsequent steps, the prime indicates the derivative with respect to $\lambda$, and the notation $\langle X \rangle_{\vec t, \lambda}$ means
+\begin{equation}
+\langle X \rangle_{\vec t, \lambda}  =
+	\frac
+    	{\int X(x, \lambda) 
+        	\exp\left[
+        		\beta(t_0-1)H_0 +
+                \beta(t_1-1)H_1(\lambda) +
+                \beta(t_2-1)H_2(\lambda)
+            \right] dx
+        }
+    	{\int
+        	\exp\left[
+        		\beta(t_0-1)H_0 +
+                \beta(t_1-1)H_1(\lambda) +
+                \beta(t_2-1)H_2(\lambda)
+            \right] dx
+        }.
+\end{equation}
+
+The general form of $D_{i,j,k}K'$ is:
+\begin{equation}
+[D_{i,j,k}K_\lambda']_{\vec t=0} =
+	\beta\left[
+		j \phi_{i, j-1, k}^{(1)}(\lambda) -
+    	\phi_{i,j,k}^{(1)}(\lambda) +
+    	k \phi_{i, j, k-1}^{(2)}(\lambda) -
+    	\phi_{i,j,k}^{(2)}(\lambda)
+    \right],
+\label{eq:deriv}
+\end{equation}
+where we have introduced the notation
+\begin{equation}
+\phi_{i,j,k}^{(u)}(\lambda) =
+	\left[ D_{i,j,k} \left\langle
+    	H_u'
+    \right\rangle_{\vec t, \lambda} \right]_{\vec t=0}.
+\end{equation}
+Each term $\phi_{i,j,k}^{(1)}$ can be produced in two different ways, from $D_{i,j,k}K'$ or $D_{i,j+1,k}K'$. Similarly, each $\phi_{i,j,k}^{(2)}$ can be produced from $D_{i,j,k}K'$ or $D_{i,j,k+1}K'$.
+
+Regrouping similar terms, we can rewrite Eq.~\ref{eq:split} as:
+\begin{equation}
+\Delta\Delta A^{(u)} =
+	\int_0^1 \left(
+        a_{0,1,0}^{(u)}\left\langle H_1' \right\rangle +
+        a_{0,0,1}^{(u)}\left\langle H_2' \right\rangle +
+        \psi_1^{(u)}(\lambda) +
+        \psi_2^{(u)}(\lambda)
+    \right) d\lambda,
+\end{equation}
+with
+\begin{align}
+\psi_1^{(u)}(\lambda) &=
+	\sum_{n=1}^{\infty}
+    \sum_{i+j+k=n}
+        \phi_{i,j,k}^{(1)}\left(
+            \frac
+                {(j+1)a_{i,j+1,k}^{(u)}}
+                {i!(j+1)!k!} -
+            \frac
+                {a_{i,j,k}^{(u)}}
+                {i!j!k!}
+        \right) \nonumber\\
+    &=
+	\sum_{n=1}^{\infty}
+    \sum_{i+j+k=n}
+        \frac{\phi_{i,j,k}^{(1)}}{i!j!k!}
+        \left(
+            {a_{i,j+1,k}^{(u)}} -
+            {a_{i,j,k}^{(u)}}
+        \right) \label{eq:psi1}\\
+\psi_2^{(u)}(\lambda) &=
+	\sum_{n=1}^{\infty}
+    \sum_{i+j+k=n}
+    	\frac{}{}
+        \phi_{i,j,k}^{(2)}\left(
+            \frac
+                {(k+1)a_{i,j,k+1}^{(u)}}
+                {i!j!(k+1)!} -
+            \frac
+                {a_{i,j,k}^{(u)}}
+                {i!j!k!}
+      	\right)\nonumber\\
+    &=
+	\sum_{n=1}^{\infty}
+    \sum_{i+j+k=n}
+        \frac{\phi_{i,j,k}^{(2)}}{i!j!k!}
+        \left(
+            a_{i,j,k+1}^{(u)} -
+            a_{i,j,k}^{(u)}
+      	\right)\label{eq:psi2}.        .
+\end{align}
+
+
+
+\subsection{Most terms cancel in the expression for the total free energy.}
+
+Consider the case where there is only a single free energy component, i.e. the total free energy. In this case, the splitting coefficient is always unity, $a_{i,j,k}=1$. Under these conditions, the bracketed terms in Eqs.~\ref{eq:psi1} and \ref{eq:psi2} evaluate to zero and the free energy is:
+\begin{equation}
+\Delta\Delta A = \int_0^1 \bigg(
+	\left\langle H_1' \right\rangle +
+    \left\langle H_2' \right\rangle
+\bigg) d\lambda,
+\end{equation}
+which is equivalent to Eq.~\ref{eq:TI} as expected.
+
+\subsection{There are no non-trivial splittings for arbitrary $\lambda$-dependence.}
+
+Consider an arbitrary $\lambda$-dependence of $H_1$ and $H_2$. Cancellation of the bracketed terms in Eqs.~\ref{eq:psi1} and \ref{eq:psi2} requires that
+\begin{align*}
+a_{i,j+1,k}^{(u)} &= a_{i,j,k}^{(u)} \\
+a_{i,j,k+1}^{(u)} &= a_{i,j,k}^{(u)},
+\end{align*}
+which has only trivial solutions like $\big\{a_{i,j,k}^{(0)} = a_{i,j,k}^{(1)} = a_{i,j,k}^{(2)} = 1/3\big\}$ or $\big\{a_{i,j,k}^{(0)}=0, a_{i,j,k}^{(1)}=a_{i,j,k}^{(2)}=1/2 \big\}$ that partition the free energy into fixed fractions of the total.
+
+Although there is no splitting that results in cancellation for arbitrary $\lambda$-dependence, we will show later that it is possible to partially correct a path-dependent decomposition towards path-independence.
+
+\subsection{Identical scaling leads to a natural splitting where most terms cancel.}
+
+Consider the case where the $\lambda$-dependence of $H_1$ and $H_2$ is a simple scaling by the same function, $H(\lambda)=H_0 + f(\lambda)h_1 + f(\lambda)h_2$. In these circumstances,
+\begin{equation*}
+\frac{\partial}{\partial t_1}
+	\langle H_2' \rangle_{\vec t, \lambda} = 
+\frac{\partial}{\partial t_2}
+	\langle H_1' \rangle_{\vec t, \lambda},
+\end{equation*}
+which implies
+\begin{equation}
+\phi_{i,j,k}^{(2)} = \phi_{i,j-1,k+1}^{(1)}.
+\label{eq:separable}
+\end{equation}
+Substitution of Eq.~\ref{eq:separable} into Eq.~\ref{eq:deriv} gives
+\begin{align}
+[D_{i,j,k}K_\lambda']_{\vec t=0} &=
+	\beta\left[
+		j \phi_{i, j-1, k}^{(1)}(\lambda) -
+    	\phi_{i,j,k}^{(1)}(\lambda) +
+    	k \phi_{i, j-1, k}^{(1)}(\lambda) -
+    	\phi_{i,j-1,k+1}^{(1)}(\lambda)
+    \right] \nonumber \\
+    &=
+	\beta\left[
+		(j + k)\phi_{i, j-1, k}^{(1)}(\lambda) -
+    	\phi_{i,j,k}^{(1)}(\lambda) -
+    	\phi_{i,j-1,k+1}^{(1)}(\lambda)
+    \right].
+\end{align}
+Each term $\phi_{i,j,k}^{(1)}$ can be produced in three different ways, from $D_{i,j,k}K'$, $D_{i,j+1,k}K'$, or $D_{i,j+1,k-1}K'$. Grouping of similar terms gives
+\begin{equation}
+\Delta\Delta A^{(u)} =
+	\int_0^1 \left(
+        a_{0,1,0}^{(u)}f'(\lambda)
+        \left\langle h_1 \right\rangle +
+        a_{0,0,1}^{(u)}f'(\lambda)
+        \left\langle h_2 \right\rangle +
+        \sigma(\lambda)
+    \right) d\lambda,
+\end{equation}
+with
+\begin{align}
+\sigma(\lambda) &=
+	\sum_{n=1}^{\infty}
+    \sum_{i+j+k=n}
+        \phi_{i,j,k}^{(1)}\left(
+            \frac
+                {(j+k+1)a_{i,j+1,k}^{(u)}}
+                {i!(j+1)!k!} -
+            \frac
+                {a_{i,j,k}^{(u)}}
+                {i!j!k!} -
+            \frac
+            	{a_{i,j+1,k-1}}
+                {i!(j+1)!(k-1)!}
+        \right) \nonumber \\
+&=
+	\sum_{n=1}^{\infty}
+    \sum_{i+j+k=n}
+        \frac
+        	{\phi_{i,j,k}^{(1)}}
+            {i!j!k!}
+        \left(
+            \frac
+                {(j+k+1)a_{i,j+1,k}^{(u)}}
+                {j+1} -
+            a_{i,j,k}^{(u)} -
+           	\frac
+            	{k a_{i,j+1,k-1}^{(u)}}
+                {j+1}
+		\right).
+\label{eq:cancel}
+\end{align}
+Cancellation of the bracketed terms in Eq.~\ref{eq:cancel} requires
+\begin{equation}
+\frac
+	{(j+k+1)a_{i,j+1,k}^{(u)}}
+	{j+1} -
+a_{i,j,k}^{(u)} -
+\frac
+	{k a_{i,j+1,k-1}^{(u)}}
+	{j+1}
+= 0.
+\end{equation}
+Under the constraints $a_{1,0,0}^{(0)} = 1$, $a_{0,1,0}^{(1)} = 1$, and $a_{0,0,1}^{(2)} = 1$, the solution is
+\begin{align}
+a_{i,j,k}^{(0)} &= \begin{cases}
+    1 & \text{if $i>0$} \\
+    0 & \text{otherwise}
+    \end{cases}\nonumber\\
+a_{i,j,k}^{(1)} &= \begin{cases}
+    0 & \text{if $i>0$} \\
+    \frac{j}{j+k} & \text{otherwise}
+    \end{cases}\nonumber\\
+a_{i,j,k}^{(2)} &= \begin{cases}
+    0 & \text{if $i>0$} \\
+    \frac{k}{j+k} & \text{otherwise,}
+    \end{cases}
+\label{eq:splitting}
+\end{align}
+leading to
+\begin{equation}
+\begin{split}
+\Delta\Delta A^{(0)} &= 0 \\
+\Delta\Delta A^{(1)} &= 
+	\int_0^1 f'(\lambda)
+    \langle h_1 \rangle 
+    d\lambda \\
+\Delta\Delta A^{(2)} &= 
+	\int_0^1 f'(\lambda)
+    \langle h_2 \rangle
+    d\lambda.
+\end{split}
+\end{equation}
+Thus, in the case of identical scaling, the na\"ive scaling given by Eq.~\ref{eq:naive} results in a path-independent free energy decomposition. This result is similar to that in previous work, but here is extended to the case for an arbitrary scaling function $f(\lambda)$, rather than $f(\lambda)=\lambda$, and to include a spectator component $H_0$ that has no $\lambda$-dependence.
+
+\subsection{The natural splitting results in an intuitive decomposition of the joint entropic components.}
+
+Explain why this is a reasonable splitting...
+
+\subsection{The path-dependence of free energy decompositions can be partially eliminated by performing a correction to finite order.}
+
+Consider the sum of corrections due to $\psi_1$:
+\begin{equation}
+\psi_1^{(1)} + \psi_1^{(2)} =
+	\sum_{n=1}^{\infty}
+    \sum_{i+j+k=n}
+        \frac{\phi_{i,j,k}^{(1)}}{i!j!k!}
+        \left(
+            a_{i,j+1,k}^{(1)} -
+            a_{i,j,k}^{(1)} +
+            a_{i,j+1,k}^{(2)} -
+            a_{i,j,k}^{(2)}
+        \right).
+\end{equation}
+For the splitting given by Eq.~\ref{eq:splitting}, the bracketed terms cancel. A similar result holds for $\psi_2^{(1)} + \psi_2^{(2)}$.
+
+We view each order $n$ of Eqs.~\ref{eq:psi1} and \ref{eq:psi2} as a correction towards path-independence. Each order of correction leaves the total free energy invariant, but shifts some free energy from $\Delta\Delta A^{(1)}$ to $\Delta\Delta A^{(2)}$ or vice versa. This means that the path-dependence can be partially corrected by truncating Eqs.~\ref{eq:psi1} and \ref{eq:psi2} at finite order without affecting the total free energy.
+
+Show the corrections to first and second order.
+
+Explain that estimates of higher-order corrections are likely high-variance.
+
+
+
+\subsection*{An alternative decomposition provides an estimate of free energy change in the absence of Hamiltonian components.}
+
+
+
+
+
+\section{Numerical Results}
+
+\subsection{Corrections to first order are sufficient to give nearly path-independent free energy decompositions for a simple test system.}
+
+\subsection{An alternative decomposition provides an estimate of free energy change in the absence of Hamiltonian components.}
+
+
+\section{Conclusions}
+
 \end{document}
