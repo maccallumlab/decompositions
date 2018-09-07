@@ -56,7 +56,10 @@ Consider a system with Hamiltonian $H(x, \lambda) = H_1(x, \lambda) + H_2(x, \la
 
 The excess free energy compared to an ideal gas is:
 \begin{equation}\label{eq:dA}
-\Delta A(\lambda) = -\beta^{-1} \ln \int e^{-\beta H(\lambda)} dx,
+\Delta A(\lambda) = -\beta^{-1} \left[ 
+	\ln \int e^{-\beta H(\lambda)} dx - 
+	\ln \int dx
+\right],
 \end{equation}
 where $\beta=1/k_BT$, $k_B$ is Boltzmann's constant, and $T$ is the absolute temperature.
 
@@ -177,7 +180,7 @@ Up to third order, the cumulants are equal to the corresponding central moments.
 
 We can recast Eq.~\ref{eq:cumu_dA} graphically as a sum over an infinite 1-dimensional array of cells (Figure~\ref{fig:1D}), where the $n$th cell contains the $n$th cumulant along with the factor $\beta^{-1}/n!$. The first cell ($n=0$) is always zero. The next cell ($n=1$) is the enthalpy, $\langle H \rangle_\lambda$. The sum of the remaining cells ($n=2...$) is the entropic free energy.
 
-This breakdown makes sense, as the enthalpy is simply the average energy of the system, which is exactly the first cumulant. Meanwhile, the entropic part of the free energy depends on the ``peakedness'' or ``flatness'' of the ensemble, which is exactly what is characterized by the the higher-order cumulants.
+This breakdown makes sense, as the enthalpy is simply the average energy of the system, which is exactly the first cumulant. Meanwhile, the entropic part of the free energy depends on the ``peakedness'' or ``flatness'' of the ensemble, which is exactly what is characterized by the the second and higher-order cumulants.
 
 % Several properties of cumulants have important statistical mechanical implications. First, the cumulants are semi-invariant, meaning that $\kappa_1(X+c)=\kappa_1(X)+c$ and $\kappa_n(X+c) = \kappa_n(X)$ for some constant $c$ and $n \ge 2$. In statistical mechanics, this implies that if the energy of every microstate in a system is changed by $c$, the enthalpy also increases by $c$, whereas the entropy is unchanged. Second, the cumulants are additive $\kappa_n(X + Y) = \kappa_n(X) + \kappa_n(Y)$ when $X$ and $Y$ are independent. In statistical mechanics, this implies that for a composite system composed of independent sub-systems, the the total enthalpy or entropy is just the sum of the sub-system enthalpies or entropies.
 
@@ -236,7 +239,7 @@ This graphical decomposition extends to higher dimensions, although it becomes d
 	\item and a single trivariate entropic contribution: $\mathcal{S}(H_1, H_2, H_3)$.
 \end{itemize}
 
-Note that we use the notation $\mathcal{S}(H_i)$ to indicate the entropic free energy contribution to the free energy due to $H_i$, rather than the entropy of the random variable $H_i$ itself. Multivariate contributions, like $\mathcal{S}(H_1, H_2)$, include only the cumulant terms where all of the corresponding derivative terms are non-zero. In other words, the $\mathcal{S}(H_1)$ and $\mathcal{S}(H_2)$ terms are not included in $\mathcal{S}(H_1, H_2)$.
+Note that we use the notation $\mathcal{S}(H_i)$ to indicate the entropic free energy contribution due to $H_i$, rather than the entropy of the random variable $H_i$ itself. Multivariate contributions, like $\mathcal{S}(H_1, H_2)$, include only the cumulant terms where all of the corresponding derivative terms are non-zero. In other words, the $\mathcal{S}(H_1)$ and $\mathcal{S}(H_2)$ terms are not included in $\mathcal{S}(H_1, H_2)$.
 
 
 
@@ -252,7 +255,7 @@ The cumulants are state functions, so we can define path-independent free energy
 	\sum_{i+j=n}
 	\frac{a_{i,j}^{(u)}}{i!j!}\left[ D_{i,j} K_\lambda\right]_{t=0},
 \end{equation}
-where $u=1, 2, \ldots$ indexes the components, and $a_{i,j}^{(u)}$ are the splitting coefficients. The splitting coefficients divide each cumulant between the free energy components and are subject to $0 \le a_{i,j}^{(u)} \le 1$ and $\sum_u a_{i,j}^{(u)}=1$.
+where $u=1, 2, \ldots$ indexes the components, and $a_{i,j}^{(u)}$ are the splitting coefficients. The splitting coefficients divide each cumulant between the free energy components and are subject to $\sum_u a_{i,j}^{(u)}=1$.
 
 The free energy components can be evaluated by thermodynamic integration:
 \begin{align}
@@ -317,7 +320,7 @@ Each term $\phi_{i,j}^{(1)}$ can be produced in two different ways, from $D_{i,j
 
 Regrouping similar terms, we can rewrite Eq.~\ref{eq:split} as:
 \begin{equation}
-\Delta\Delta A^{(u)} =
+\Delta\Delta {A^{(u)}}' =
 	\int_0^1 \left(
         a_{1,0}^{(u)}\left\langle H_1' \right\rangle +
         a_{0,1}^{(u)}\left\langle H_2' \right\rangle +
@@ -394,7 +397,7 @@ In Appendix 2, we show that the particular case of an identical scaling, $H(\lam
 
 \subsection{Good decompositions are readily interpretable and make predictions.}
 
-Provided the splitting coefficients are valid, that is $0 \le a_{i,j}^{(u)} \le 1$ and $\sum_u a_{i,j}^{(u)}=1$, no decomposition is more correct than any other. However, some decompositions are not useful, as they are difficult to interpret and provide little or no predictive power (Figure~\ref{fig:bad_split}).
+Provided the splitting coefficients are valid, that is $\sum_u a_{i,j}^{(u)}=1$, no decomposition is more ``correct'' than any other. However, some decompositions are not useful, as they are difficult to interpret and provide little or no predictive power (Figure~\ref{fig:bad_split}).
 
 \begin{figure}[tb]
 \centering
@@ -413,7 +416,9 @@ Provided the splitting coefficients are valid, that is $0 \le a_{i,j}^{(u)} \le 
 Some decompositions are more readily interpretable, e.g. Figure~\ref{fig:ok_split}. This splitting decomposes the cumulants in a obvious way, with half of each joint cumulant split between the two components. However, this decompositions does not allow us to make predictions. For example, what would the free energy be if $H_1$ was set to zero? This decomposition does not allow us to address this question.
 
 
-Figure~\ref{fig:good_split} shows an example of the most useful type of decomposition. In this decomposition, $\Delta\Delta A_1$ contains all of the cumulants to depend only on $H_1$, $\Delta\Delta A_2$ contains all of the cumulants that depend only on $H_2$, and $\Delta\Delta A_{12}$ contains all of the cumulants that depend on both $H_1$ and $H_2$. This decomposition is readily interpretable, as each component has a clear meaning. Furthermore, this decompositions enables predictions due to an important property of cumulants: any component that contains one or more variables that is independent of all others vanishes. So for example, if $H_1$ is set to zero, then $\Delta\Delta A_1$ and $\Delta\Delta A_{12}$ vanish, leaving only $\Delta\Delta A_2$.
+Figure~\ref{fig:good_split} shows an example of the most useful type of decomposition. In this decomposition, $\Delta\Delta A_1$ contains all of the cumulants to depend only on $H_1$, $\Delta\Delta A_2$ contains all of the cumulants that depend only on $H_2$, and $\Delta\Delta A_{12}$ contains all of the cumulants that depend on both $H_1$ and $H_2$. This decomposition is readily interpretable, as each component has a clear meaning. Furthermore, this decompositions enables predictions. We will show below that $\Delta\Delta A_1$ and $\Delta\Delta A_2$ are the free energies if the corresponding Hamiltonian component is set to zero, while $\Delta\Delta A_1 + \Delta\Delta A_1 + \Delta\Delta A_{1,2}$ is the free energy if both $H_1$ and $H_2$ are set to zero.
+
+We need to come up with consistent notation throughout. I propose $\mathcal{A}_i$ for single-component terms, $\mathcal{C}_{ij}$ for coupling terms, and $\mathcal{A}_{i,j} = \mathcal{A}_i + \mathcal{A}_j + \mathcal{C}_{i,j}$.
 
 \begin{figure}[tb]
 \centering
@@ -578,65 +583,37 @@ Applying the same analysis to all three components gives:
 	\right\rangle_\lambda
 \end{align*}
 
-We can use these expressions to predict the free energy change in the absence of certain components of the Hamiltonian. For example, we predict that the free energy change when $H_2=0$ will be:
+We can use these expressions to predict the free energy change in the absence of certain components of the Hamiltonian. For example, we predict that the free energy change when $H_1=0$ will be:
 \begin{align*}
-A_{H_2=0}' =& A_1' + A_{1,2}'\\
+A_{H_1=0}' =& A' - A_1'\\
 =&
 \frac
 	{\left\langle H_1' e^{\beta H_2} \right\rangle}
 	{\left\langle e^{\beta H_2} \right\rangle}
 \end{align*}
 
-A couple of points:
-\begin{itemize}
-	\item I'm confused about why it isn't just $A_1$ instead of $A_1 + A_{1,2}$, but this is what gives the correct answer.
-	\item This is exact. There is no non-additivity here.
-	\item The exponential may make this noisy and hard to estimate.
-	\item There will be a similar result for the truncated cumulant expansion that may give more accurate results with finite sampling.
-\end{itemize}
+\subsection{Another approach...}
 
-Evidently, this also implies that the sum of the cumulants that involve $H_1$ under the Hamiltonian $H = H_1 + H_2$ is equal to the sum of the cumulants involving $H_1$ under the Hamiltonian $H = H_1$, see Figure~\ref{fig:sum}. How does this generalize to more components? This seems really interesting to me. It reminds me of the case in the old writeup, where all of the change to the spectator component would cancel. In that case, we were also using a splitting where every term that contains $H_0$ went to the same component.
+We've started from the MV cumulant expansion and then divided up the cumulants. For the sorts of decompositions that we're looking at, we can show that this gives series expansions that look like Eq.~\ref{eq:same_ensemble}.
 
-\begin{figure}[tb]
-\centering
-\includegraphics[width=3in]{figure7.pdf}
-\caption{Sums of cumulants are the same under different ensembles.}
-\label{fig:sum}
-\end{figure}
+Alternatively, we could start by defining what it is that we want to calculate, i.e. Eq.~\ref{eq:same_ensemble}, and then series expand. We get to the same place either way, but I'm not sure which gives the clearer presentation.
 
-These results also suggest another decomposition, where:
-\begin{align*}
-{A_1^{*}}' =&
-	A_1' + A_{1,2}' \\
-=&
-	\frac
-		{\left\langle H_1' e^{\beta H_2} \right\rangle_\lambda}
-		{\left\langle e^{\beta H_2} \right\rangle_\lambda} \\
-{A_2^{*}}' =&
-	A_2' + A_{1,2}'\\
-=&
-	\frac
-		{\left\langle H_2' e^{\beta H_1} \right\rangle_\lambda}
-		{\left\langle e^{\beta H_1} \right\rangle_\lambda} \\
-{A_{1,2}^{*}}' =&
-	- A_{1,2}' \\
-=&
-	\left\langle
-		H_1'
-	\right\rangle_\lambda +
-	\left\langle
-		H_2'
-	\right\rangle_\lambda -
-	\frac
-		{\left\langle H_2' e^{\beta H_1} \right\rangle_\lambda}
-		{\left\langle e^{\beta H_1} \right\rangle_\lambda} -
-	\frac
-		{\left\langle H_1' e^{\beta H_2} \right\rangle_\lambda}
-		{\left\langle e^{\beta H_2} \right\rangle_\lambda}
-\end{align*}
-This might be more interpretable than the one before. It's a bit weird though, because the splitting coefficients are no longer in the range $[0, 1]$, instead some of them are now negative.
+I think we should present everything as the three component case, where it makes sense to predict the change in free energy if $H_1$ or $H_2$ are absent, but where predicting the free energy with $H_0$ set to zero makes no sense.
+
+\subsection{Spatial vs other decompositions}
+
+This section will explain how spatial decompositions, e.g. residue or functional group, are better. Something like electrostatics and LJ is a problematic decomposition, because thees terms share the same dof and so energies are going to be highly coupled. This leads to non-negligible higher-order cumulants that are going to be hard to estimate and split. For spatial decompositions, only terms for nearby residues are going to be strongly coupled. This means that any errors are spatially localized, so there might be some "smearing" between nearby residues.
 
 \section{Numerical Results}
+
+Based on the functional form, we expect that there might be some challenges in evaluating these numerically. We have three different ways to do it:
+\begin{enumerate}
+	\item Repeat the calculation multiple times, in turn removing Hamiltonian components. Accurate, but expensive.
+	\item Try to use the exponential form. Exact, but potentially very noisy.
+	\item Try to use the cumulant expansion. Approximation, but less noisy.
+\end{enumerate}
+
+In any case, for a spatial decomposition, the errors should be localized, so this is probably still very useful gaining insight.
 
 \section{Conclusions}
 
