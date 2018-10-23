@@ -617,6 +617,92 @@ In any case, for a spatial decomposition, the errors should be localized, so thi
 
 \section{Conclusions}
 
+\section*{Random bits that need to find a home}
+\subsection*{We can compute entropies...}
+
+We're talking about the univariate, i.e. not components, total free energy in this section. The first cumulant is the enthalpy. The sum of all of the higher order cumulants is the entropic free energy.
+\begin{equation}
+-T \Delta S = \beta^{-1} \sum_{n=2}^\infty \frac{1}{n!}
+	\Bigg[ 
+		\frac{d^n}{dt^n}
+		\ln \langle e^{t\beta H} \rangle
+	\Bigg]_{t=0}.
+\end{equation}
+
+Following a similar procedure as before, we can differentiate with respect to $\lambda$:
+\begin{equation}
+-T\frac{d\Delta S}{d\lambda} = \beta^{-1} \sum_{n=2}^\infty \frac{1}{n!}
+	\Bigg[ 
+		\frac{d^n}{dt^n}
+		\frac{d}{d\lambda} \ln \langle e^{t \beta H} \rangle
+	\Bigg]_{t=0}.
+\end{equation}
+Next, we have:
+\begin{equation}
+\frac{d}{d\lambda} \langle e^{t \beta H} \rangle =
+\beta \left[
+	t \langle H' \rangle_{t, \lambda} - \langle H' \rangle_{t, \lambda}
+\right],
+\end{equation}
+where the $\langle \cdot \rangle_{t,\lambda}$ notation has a similar meaning to previous sections.
+
+The general form of $D_n K'$ is:
+\begin{equation}
+[D_n K_\lambda']_{t=0} =
+	\beta\left[
+		n \phi_{n-1}(\lambda) -
+    	\phi_n(\lambda)
+    \right],
+\end{equation}
+where
+\begin{equation}
+\phi_n(\lambda) =
+	\left[ D_n \left\langle
+    	H'
+    \right\rangle_{t, \lambda} \right]_{t=0}.
+\end{equation}
+As before, each term $\phi_n$ can be produced in two different ways, from $D_n K'$ or $D_{n+1} K'$. So, for $n=2\ldots\infty$, nearly all of the terms will be paired up, but there will be a single unpaired first-order term:
+\begin{align}
+-T \Delta S = \int_0^1
+	\Bigg[ 
+		\langle H' H \rangle - \langle H' \rangle \langle H \rangle
+	\Bigg] d\lambda
+\end{align}
+Note, that I might have the sign backwards.
+
+This needs a better explanation, but it follows from the same logic used in other sections.
+
+Does this even go in this paper, or do we try to write it up separately. I haven't tried to use this formula. We would need to see how it compares to the two other common ways to estimate entropy changes: (1) temperature dependence of free energy, (2) estimating enthalpy based on average energies at the endpoints, then using $-T \Delta S = \Delta G - \Delta H$.
+
+\subsection*{What do the cumulants mean?}
+
+Getting to Eq.~\ref{eq:same_ensemble} was a complicated way to figure out what the components mean. Instead, we can proceed as follows, which might be clearer. We start with one of the cumulants where $H_2$ is zero:
+\begin{align}
+\Bigg[ D_i \ln \langle e^{t_1 H_1} \rangle_{H_2=0} \Bigg]_{t_1=0} =&
+	\Bigg[ D_i \ln \frac{\langle e^{t_1 H_1} e^{H_2} \rangle}{\langle e^{H_2} \rangle} \Bigg]_{t_1=0} \\
+	= &
+		\Bigg[ D_i \ln \langle e^{t_1 H_1} e^{H_2} \rangle \Bigg]_{t_1=0}  -
+		\Bigg[ D_i \ln {\langle e^{H_2} \rangle} \Bigg]_{t_1=0} \\
+	= &
+		\Bigg[ D_i \ln \langle e^{t_1 H_1} e^{H_2} \rangle \Bigg]_{t_1=0}.
+\end{align}
+We can then introduce $t_2$, expand around $t_2=0$ and evaluate at $t_2=1$, which gives:
+\begin{align}
+\Bigg[ D_i \ln \langle e^{t_1 H_1} e^{H_2} \rangle \Bigg]_{t_1=0} =&
+	\Bigg[ D_{i,0} \sum_{j=0}^\infty \frac{1}{j!} \Bigg[
+		D_{0,j} \ln \langle e^{t_1 H_1} e^{H_2} \rangle
+	\Bigg]_{t_2=0}
+\Bigg]_{t_1=0} \\
+=&
+\sum_{j=0}^\infty \frac{1}{j!}
+\Bigg[
+	D_{i,j} \ln \langle e^{t_1 H_1} e^{t_2 H_2} \rangle
+\Bigg]_{t_1=t_2=0}.
+\end{align}
+
+This notation needs to be cleaned up, but we've shown that each cumulant from the ensemble where $H_2=0$ is the sum of the corresponding rows in the case where $H_2$ is ``active''. From this, it's easy to deduce the meaning of our $A_1$ and $A_2$ components.
+
+
 \section*{Appendices}
 \subsection*{Appendix 1. The joint cumulants capture the statistical dependence of Hamiltonian components.}
 
