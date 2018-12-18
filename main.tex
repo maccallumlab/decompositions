@@ -5,6 +5,7 @@
 \usepackage{bm}% bold math
 \usepackage{verbatim}
 \usepackage{color}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=cyan]{hyperref}
 
 
 \newcommand{\warning}[1]{{\textsf{{\textcolor{red}{{[#1]}{}}}}}}
@@ -23,23 +24,43 @@
 Stuff...
 \end{abstract}
 
+
 \section{Introduction}
 
 \subsection{Free energy decompositions offer insight into driving forces and mechanisms.}
 
-Why are these things useful? Give examples where they give insight.
+We are interested in decomposing a single free energy calculation into meaningful contributions from various components of the Hamiltonian. 
+This is an attractive prospect; free energy components could be used to understand the driving forces underlying the free energy and to make predictions about how the free energy will change if different parts of the system are changed. For example, in a protein-protein binding calculation with N total residues, labeled $i \in \left[1, \ldots,N\right]$, we may wish to estimate the contribution of each residue $i$ to binding. Doing this rigorously requires $N+1$ separate binding free energy calculations, which is often computationally prohibitive. Instead, free energy decompositions potentially allow us to estimate the contribution of each residue from a single simulation.
+
+Unfortunately, these free energy decompositions can be problematic. Obtaining a decomposition may be easy, but obtaining a meaningful or interpretable decomposition is difficult. The central issue is that, aside from idealized cases, free energy changes are \textit{non-additive}. The available phase space of the system depends strongly on the Hamiltonian. Changes to one component of the Hamiltonian can completely change the available phase space, thus strongly influencing the values of other components. So, it is often unclear how the non-additive parts are allocated to the different free energy components. This also leads to a second problem, that free energy decompositions are \textit{path dependent}. Although the total free energy is a state function, the non-additive components (and, therefore, the free energy components) depend on the alchemical path used in the calculation. These combined issues make it unclear exactly how these free energy components should be interpreted; i.e., what is their physical meaning, and how can they be used to make predictions? 
+
+Mark and Van Gunsteren have used these arguments to conclude that free energy decompositions are inherently meaningless and should not be used~\cite{Smith:1994tn,Mark:1994un}. Karplus, Sharp, and others have argued that in many cases the couplings may be small and thus free energy components still provide useful information if interpreted carefully~\cite{Boresch:1994jj,Brady:1995dz,Boresch:1995ux,Archontis:1996ef}. 
+
+Despite these major caveats, there is a long history of using free energy decompositions to gain semi-quantitative understanding of important molecular systems. [refs here]. Free energy decompositions are also used in chemical engineering~\cite{Dixit:2011cl,Gu:2017ec}. [more refs if we want] [also cite Huggins]
+
+Here, we analyze free energy decompositions using a cumulant expansion. The cumulant expansion grants intuition into how the different components contribute to the overall enthalpy and entropy of the system and into the origin of free energy couplings. The cumulant expansion also gives a solid footing from which to build free energy decompositions as it explicitly reveals how the coupled terms are partitioned into the different free energy components. 
+
+In particular, we present two different decompositions. First, we show that the free energy components obtained directly from thermodynamic integration give a `sensible' splitting of the non-additive terms if the Hamiltonian components of interest are all scaled identically along the alchemical path. This corresponds to how most free energy decompositions are currently calculated. These components are intuitive and easy to calculate, but still must be interpreted with care, especially if the non-additive components are large.  Our derivation follows the work of Brady and Sharp~\cite{Brady:1996gm} but is more general. 
+
+The second decomposition is our central result. This decomposition contains a series of univariate and multivariate components. These components are readily interpretable: each univariate component $i$ corresponds to the total free energy less the free energy were that component $i$ of the Hamiltonian removed from the system. Similarly, a multivariate component $ij $ corresponds to the total free energy less the free energy were both components $i$ and $j$ of the Hamiltonian removed from the system. These free energy components are more difficult to calculate exactly, but we show that reliable estimates can be obtained by including and truncating the cumulant expansion in the free energy calculation. 
+
+
+
+
+%However, free energy decompositions can be problematic. Obtaining a decomposition may be easy, but obtaining a meaningful or interpretable decomposition can be hard. There are two primary challenges. First, free energy decompositions are path dependent. Although the total free energy ∆A is a state function, it’s contributions are not, meaning that different paths lead to different decompositions. Second, free energy changes are often non-additive. The available phase space of the system depends strongly on the Hamiltonian. Changes to one component of the Hamiltonian can completely change the available phase space, thus strongly influencing the values of other components.
+
+
+%Free energy calculations are an increasingly important tool of molecular simulation. An attractive prospect is to break a single free energy value into separate additive components. For example, in protein-protein binding, we may be interested in breaking the binding free energy into per-residue free energy contributions that could be used to identify `hot spots' to guide mutations and design.  [Other examples, references that use free energy decompositions. Free energy decomps are used in chem engineering~\cite{NULL}]
+
+%Unfortunately, these free energy components are themselves not state functions because, aside from idealized cases, a free energy cannot be separated into additive components. For this reason, it is unclear exactly how these free energy components should be interpreted. The central problem is that a free energy value contains \textit{couplings} between the different degrees of freedom that would be partitioned across the different free energy components. In general, it is unclear how these couplings are `assigned' to the different free energy components. For this reason, the free energy components are in general \textit{path dependent}, where the allocation of these coupled interactions into any given free energy component will depend on the alchemical path. These combined issues make it unclear exactly how these free energy components should be \textit{interpreted}; i.e., what in their physical meaning, and how can they be used to make predictions?  Mark and Van Gunsteren have used these arguments to conclude that free energy decompositions are inherently meaningless and should not be used. Karplus and coworkers have argued that in many cases the couplings may be \textit{small} and thus free energy components still provide useful information if interpreted carefully~\cite{NULL}. 
 
 
 
 
 
+%Explain non-additivity. Essentially, changes to one Hamiltonian component will affect the distribution of conformations, which, in turn, affects all of the other Hamiltonian components. This is a fundamental issue inherent to the concept of free energy, and is not due to some artifact of free energy calculations. It happens in both experiment and simulation. This will always be an issue, but decompositions can still be useful for understanding driving forces, e.g. utility of alanine mutagenesis, etc. Care is required in interpretation, but these measurements are clearly valuable.
 
-
-\subsection{The interpretation of free energy decompositions faces two challenges.}
-
-Explain non-additivity. Essentially, changes to one Hamiltonian component will affect the distribution of conformations, which, in turn, affects all of the other Hamiltonian components. This is a fundamental issue inherent to the concept of free energy, and is not due to some artifact of free energy calculations. It happens in both experiment and simulation. This will always be an issue, but decompositions can still be useful for understanding driving forces, e.g. utility of alanine mutagenesis, etc. Care is required in interpretation, but these measurements are clearly valuable.
-
-Explain path-dependence. When different ways of doing a calculation give different answers, interpretation is difficult or impossible. However, we will show that this issue isn't inherent and that path-independent free energy components can be well defined.
+%Explain path-dependence. When different ways of doing a calculation give different answers, interpretation is difficult or impossible. However, we will show that this issue isn't inherent and that path-independent free energy components can be well defined.
 
 
 
@@ -52,11 +73,11 @@ Explain path-dependence. When different ways of doing a calculation give differe
 
 \subsection{Free energy changes can be calculated by thermodynamic integration.}
 
-Consider a system with Hamiltonian $H(x, \lambda) = H_1(x, \lambda) + H_2(x, \lambda) + \ldots$ parameterized by a control parameter $\lambda$. The components $\{H_1, H_2, \ldots\}$ each depend on $\lambda$ in some arbitrary way. For ease of presentation, we largely focus on the case of two components, but our results readily generalize to an arbitrary number of Hamiltonian components. Hereafter, to simplify notation, we omit the $x$-dependence of the Hamiltonian and its components.
+Consider a system with Hamiltonian $H(x, \lambda) = H_0 (x) + H_1(x, \lambda) + H_2(x, \lambda)$ parameterized by a control parameter $\lambda$. The components $H_1$ and  $H_2$ each depend on $\lambda$ in some arbitrary way, while $H_0$ does not.  These Hamiltonian components may correspond to a decomposition of energy terms (Lennard Jones, charged interactions, etc.) or to a decomposition across different degrees of freedom (per-residue interactions, for example). For ease of presentation, we largely focus on this case of two components, but our results readily generalize to an arbitrary number of Hamiltonian components. Hereafter, to simplify notation, we omit the $x$-dependence of the Hamiltonian and its components.
 
 The excess free energy compared to an ideal gas is:
 \begin{equation}\label{eq:dA}
-\Delta A(\lambda) = -\beta^{-1} \left[ 
+A(\lambda) = -\beta^{-1} \left[ 
 	\ln \int e^{-\beta H(\lambda)} dx - 
 	\ln \int dx
 \right],
@@ -65,22 +86,18 @@ where $\beta=1/k_BT$, $k_B$ is Boltzmann's constant, and $T$ is the absolute tem
 
 We can compute the free energy difference between the states $\lambda=0$ and $\lambda=1$ using thermodynamic integration:
 \begin{align}
-\Delta\Delta A =& \Delta A(1) - \Delta A(0) \nonumber\\
-               =& \int_0^1 \frac{d}{d\lambda} \Delta A(\lambda) d\lambda \nonumber\\
+\Delta A =&  A(1) - A(0) \nonumber\\
+               =& \int_0^1 \frac{d}{d\lambda}  A(\lambda) d\lambda \nonumber\\
                =& \int_0^1 \left\langle \frac{dH(\lambda)}{d\lambda}\right\rangle_\lambda 
                 d\lambda \label{eq:TI},
 \end{align}
-where the angle brackets denote the ensemble average:
+where the angle brackets denote the ensemble average at the subscripted value of $\lambda$:
 \begin{equation}
 \left\langle f \right\rangle_\lambda = \frac
 	{\int f(x, \lambda) e^{-\beta H(\lambda)} dx}
     {\int e^{-\beta H(\lambda)} dx}.
 \end{equation}
 
-
-
-
-\subsection{The most obvious free energy decomposition is path-dependent.}
 
 The form of Eq.~\ref{eq:TI} suggests a natural decomposition of the free energy:
 \begin{align}
@@ -91,22 +108,7 @@ The form of Eq.~\ref{eq:TI} suggests a natural decomposition of the free energy:
 	\int_0^1 \left\langle \frac{dH_2(\lambda)}{d\lambda}\right\rangle_\lambda d\lambda.    
 \label{eq:naive}
 \end{align}
-However, it is known that the free energy components obtained in this way are path-dependent. $\Delta\Delta A_1$ and $\Delta\Delta A_2$ are not state functions and their value depends on the parameterization of the Hamiltonian with respect to $\lambda$. Different parameterizations will give different decompositions, even when the initial and final states are the same, which makes interpretation of such decompositions challenging.
-
-This strategy:
-\begin{itemize}
-\item calculated the derivative of the free energy with respect to $\lambda$,
-\item then tried to separate the derivatives into components.
-\end{itemize}
-This doesn't work, as the resulting free energy components are path-dependent. Our approach instead will be to:
-\begin{itemize}
-\item expand the free energy in terms of cumulants
-\item split the cumulants between the free energy components
-\item calculate the derivative of the cumulants with respect to $\lambda$.
-\end{itemize}
-In general, our approach will give infinite sums of cumulant components, but we will show that these can be truncated to any order without affecting the total free energy. We will also show that in certain cases, these infinite sums can be recognized as series expansions of ensemble average quantities.
-
-
+This is the most common method of obtaining free energy components~\cite{NULL}. However, the free energy components obtained in this way are path-dependent~\cite{NULL}. $\Delta A_1$ and $\Delta A_2$ are not state functions and their value depends on the parameterization of the Hamiltonian with respect to $\lambda$. Different parameterizations will give different decompositions, even when the initial and final states are the same, which makes interpretation of such decompositions challenging.
 
 
 
@@ -114,11 +116,11 @@ In general, our approach will give infinite sums of cumulant components, but we 
 
 Eq.~\ref{eq:dA} can be re-written as an ensemble average over state $\lambda$
 \begin{equation}
-\Delta A(\lambda) =
+ A(\lambda) =
 	\beta^{-1} \ln \left\langle e^{\beta H(\lambda)} \right\rangle_\lambda.
 \label{eq:avg_expr}
 \end{equation}
-We will relate this expression to the cumulant generating function for the random variable $\beta H$, defined as:
+We relate this expression to the cumulant generating function for the random variable $\beta H$, defined as:
 \begin{align}
 K_{\lambda}(t) =&
 	\ln \left\langle 
@@ -129,11 +131,10 @@ K_{\lambda}(t) =&
             	\frac{t^n}{n!}
                 \left[ \frac{d^n}{dt^n} K_{\lambda}\right]_{t=0},
 \end{align}
-where we have introduced the auxiliary variable $t$ and Maclaurin series expanded around $t=0$.
-
+where we have introduced the auxiliary variable $t$ and the second line is the Maclaurin series expanded around $t=0$.
 The free energy is related to the cumulant generating function by:
 \begin{align}
-\Delta A(\lambda) =& \beta^{-1} K_{\lambda}(1) \nonumber\\
+ A(\lambda) =& \beta^{-1} K_{\lambda}(1) \nonumber\\
                   =& \beta^{-1} \sum_{n=1}^{\infty}
             			\frac{1}{n!}\left[
                         	\frac{d^n}{dt^n} K_{\lambda}
@@ -141,7 +142,7 @@ The free energy is related to the cumulant generating function by:
 \label{eq:cumu_dA}
 \end{align}
 
-The derivatives of $K_{\lambda}$ evaluated at $t=0$ are called cumulants. The first few examples are:
+The \textit{n}-th derivative of $K_{\lambda}$ evaluated at $t=0$ is the cumulant $\kappa_n$. The first few examples are:
 \begin{align}
 \kappa_1 &=
 	\left[\frac{d}{dt} K_{\lambda}\right]_{t=0} =
@@ -162,53 +163,99 @@ The derivatives of $K_{\lambda}$ evaluated at $t=0$ are called cumulants. The fi
     \right].
 \label{eq:cumu}
 \end{align}
+Up to third order, the cumulants are equal to the central moments. For fourth and higher-order cumulants, this is no longer true and the relationship is more complicated, but the cumulants to a given order can be always be expressed as a polynomial of the moments up to the same order.
 
-Up to third order, the cumulants are equal to the corresponding central moments. For fourth and higher-order cumulants, this is no longer true and the relationship is more complicated, but the cumulants to a given order can be always be expressed as a polynomial of the moments up to the same order.
+The cumulant expansion represents the enthalpic and entropic components of the free energy: the enthalpy is simply the average energy of the system, given by $\kappa_1$. Meanwhile, the entropic part of the free energy depends on the ``peakedness'' or ``flatness'' of the ensemble, which is exactly what is characterized by the the second and higher-order cumulants.
 
+%\subsection{The cumulants represent the enthalpic and entropic components of the free energy.}
 
+%\begin{figure}[tb]
+%\centering
+%\includegraphics[width=3in]{figure1.pdf}
+%\caption{Graphical breakdown of the free energy in terms of cumulants.}
+%\label{fig:1D}
+%\end{figure}
 
+%We can recast Eq.~\ref{eq:cumu_dA} graphically as a sum over an infinite 1-dimensional array of cells (Figure~\ref{fig:1D}), where the $n$th cell contains the $n$th cumulant along with the factor $\beta^{-1}/n!$. The first cell ($n=0$) is always zero. The next cell ($n=1$) is the enthalpy, $\langle H \rangle_\lambda$. The sum of the remaining cells ($n=2...$) is the entropic free energy.
 
-
-\subsection{The cumulants represent the enthalpic and entropic components of the free energy.}
-
-\begin{figure}[tb]
-\centering
-\includegraphics[width=3in]{figure1.pdf}
-\caption{Graphical breakdown of the free energy in terms of cumulants.}
-\label{fig:1D}
-\end{figure}
-
-We can recast Eq.~\ref{eq:cumu_dA} graphically as a sum over an infinite 1-dimensional array of cells (Figure~\ref{fig:1D}), where the $n$th cell contains the $n$th cumulant along with the factor $\beta^{-1}/n!$. The first cell ($n=0$) is always zero. The next cell ($n=1$) is the enthalpy, $\langle H \rangle_\lambda$. The sum of the remaining cells ($n=2...$) is the entropic free energy.
-
-This breakdown makes sense, as the enthalpy is simply the average energy of the system, which is exactly the first cumulant. Meanwhile, the entropic part of the free energy depends on the ``peakedness'' or ``flatness'' of the ensemble, which is exactly what is characterized by the the second and higher-order cumulants.
+%This breakdown makes sense, as the enthalpy is simply the average energy of the system, which is exactly the first cumulant. Meanwhile, the entropic part of the free energy depends on the ``peakedness'' or ``flatness'' of the ensemble, which is exactly what is characterized by the the second and higher-order cumulants.
 
 % Several properties of cumulants have important statistical mechanical implications. First, the cumulants are semi-invariant, meaning that $\kappa_1(X+c)=\kappa_1(X)+c$ and $\kappa_n(X+c) = \kappa_n(X)$ for some constant $c$ and $n \ge 2$. In statistical mechanics, this implies that if the energy of every microstate in a system is changed by $c$, the enthalpy also increases by $c$, whereas the entropy is unchanged. Second, the cumulants are additive $\kappa_n(X + Y) = \kappa_n(X) + \kappa_n(Y)$ when $X$ and $Y$ are independent. In statistical mechanics, this implies that for a composite system composed of independent sub-systems, the the total enthalpy or entropy is just the sum of the sub-system enthalpies or entropies.
 
-\subsection{The free energy can be decomposed using a multivariate cumulant expansion.}
+%\subsection{The free energy can be decomposed using a multivariate cumulant expansion.}
 
-We can also relate Eq.~\ref{eq:avg_expr} to the multivariate cumulant generating function for the random variables $\beta H_1$ and $\beta H_2$, defined as:
+We can also relate Eq.~\ref{eq:avg_expr} to the multivariate cumulant generating function for the individual components $\beta H_0$, $\beta H_1$, and $\beta H_2$:
 \begin{equation}
 K_\lambda(\vec t) =
 	\ln \left\langle 
-    	e^{t_1 \beta H_1(\lambda) + t_2 \beta H_2(\lambda)}
+    	e^{t_0 \beta H_0 + t_1 \beta H_1(\lambda) + t_2 \beta H_2(\lambda)}
     \right\rangle_\lambda.
 \end{equation}
-Series expansion around $\vec t = (t_1, t_2) = 0$ gives:
+Series expansion around $\vec t = (t_0, t_1, t_2) = 0$ gives:
 \begin{align}
-\Delta A(\lambda) =& \beta^{-1} K_\lambda(1, 1) \nonumber\\
+ A(\lambda) =& \beta^{-1} K_\lambda(1, 1) \nonumber\\
                   =& \beta^{-1} \sum_{n=1}^{\infty}
-	        			\sum_{i+j=n}
-            			\frac{1}{i!j!}\left[ D_{i,j} K_\lambda\right]_{\vec t=0},
+	        			\sum_{i+j+k=n}
+            			\frac{1}{i!j!k!}\left[  \frac{d^{i+j+k}}{ d t_0^i d t_1^j d t_2^k}  K_\lambda\right]_{\vec t=0},
 \label{eq:mult_expansion}
 \end{align}
-where the notation $D_{i,j}$ means $d^{i+j} /(d t_1^i d t_2^j)$ and the second sum is over non-negative $i$ and $j$. This expansion readily generalizes to an arbitrary number of Hamiltonian components. 
+where  the second sum is over non-negative $i$, $j$, and $k$. 
+\warning{Should the derivatives be partials?}
+To second order: 
+\begin{eqnarray}
+A (\lambda) &=& 
+\langle  H_0 \rangle_{\lambda}  + \langle  H_1 \rangle_{\lambda} + \langle  H_2 \rangle_{\lambda}  
+\\ \nonumber  & & 
++ \frac{\beta}{2} \left[  \langle  H_0^2 \rangle_{\lambda} -\langle  H_0 \rangle^2_{\lambda}  +
+\langle  H_1^2 \rangle_{\lambda} -\langle  H_1 \rangle^2_{\lambda}  
+ + \langle  H_2^2 \rangle_{\lambda} -\langle  H_2 \rangle^2_{\lambda}   \right] 
+\\ \nonumber  & & 
+ + \beta \left[ \langle  H_0 H_1\rangle_{\lambda} -\langle  H_0 \rangle_{\lambda} \langle  H_1 \rangle_{\lambda} 
+ +\langle  H_0 H_2\rangle_{\lambda} -\langle  H_0 \rangle_{\lambda} \langle  H_2 \rangle_{\lambda} 
+ +\langle  H_1 H_2\rangle_{\lambda} -\langle  H_1 \rangle_{\lambda} \langle  H_2 \rangle_{\lambda} 
+   \right]
+  \\ & & 
+ + \mathcal{O} (n^3) \nonumber
+\label{eq:O2_expansion}
+\end{eqnarray}
 
-The mixed derivatives with both $i>0$ and $j>0$ give the joint cumulants, which characterize the statistical dependence of $H_1$ and $H_2$ to a given order $n=i+j$. See Appendix 1 for a discussion of their intuitive meaning.
+We can express the free energy difference in terms of the multivariate cumulant generating function as: 
+\begin{align}
+\Delta A =&  A(1) -  A(0) \nonumber \\
+					 =&
+					 \beta^{-1} \int_0^1  \sum_{n=1}^{\infty}
+	        			\sum_{i+j+k=n}
+            			\frac{1}{i!j!k!}\left[ \frac{d^{i+j+k}}{ d t_0^i d t_1^j d t_2^k} \frac{dK_\lambda}{d\lambda} \right]_{\vec t=0} d\lambda
+				\nonumber \\	 =& 
+	\beta^{-1} \int_0^1 \sum_{n=1}^{\infty}
+	\sum_{i+j=n}
+	\frac{1}{i!j!}
+    \left[ D_{i,j} \frac{dK_\lambda}{d\lambda}\right]_{t=0} d\lambda
+    \label{eq:split}.
+\end{align}
+where the notation $D_{i,j}$ means $d^{i+j} /(d t_1^i d t_2^j)$. All derivatives with respect to $t_0$ on the second line of equation~\ref{eq:split} cancel (see appendix~\warning{NULL}), and the third line simplifies notation by removing these terms. This means that all cumulants containing $H_0$ disappear from the total free energy difference. To second order: 
+\begin{eqnarray}
+\Delta A &=& 
+ \langle  H_1 \rangle_{\lambda=1} + \langle  H_2 \rangle_{\lambda=1}  
++ \frac{\beta}{2} \left[ 
+\langle  H_1^2 \rangle_{\lambda=1} -\langle  H_1 \rangle^2_{\lambda=1}  
+ + \langle  H_2^2 \rangle_{\lambda=1} -\langle  H_2 \rangle^2_{\lambda=1}   \right] 
+ \nonumber \\   & & 
+ + \beta \left[ \langle  H_1 H_2\rangle_{\lambda} -\langle  H_1 \rangle_{\lambda} \langle  H_2 \rangle_{\lambda} 
+   \right]
+ + \mathcal{O} (n^3). 
+\label{eq:O2_expansion_delta}
+\end{eqnarray}
+This shows that the total free energy $\Delta A $ contains only a cumulant expansion of $H_1$ and $H_2$ taken at the state $\lambda=1$. 
+This is an intriguing result, and states that any change in component $H_0$ is exactly cancelled by the coupling of $H_0$ to the scaled components $H_1$ and $H_2$, see appendix~\warning{NULL}. 
 
 
+ %That these terms cancel is not immediately obvious, see appendix \warning{NULL}. 
+%This expansion readily generalizes to an arbitrary number of Hamiltonian components. 
 
+%The mixed derivatives with both $i>0$ and $j>0$ give the joint cumulants, which characterize the statistical dependence of $H_1$ and $H_2$ to a given order $n=i+j$. See Appendix 1 for a discussion of their intuitive meaning.
 
-\subsection{The free energy can be decomposed into univariate and multivariate terms.}
+%\subsection{The free energy can be decomposed into univariate and multivariate terms.}
 
 \begin{figure}[tb]
 \centering
@@ -217,21 +264,36 @@ The mixed derivatives with both $i>0$ and $j>0$ give the joint cumulants, which 
 \label{fig:2D}
 \end{figure}
 
-Eq.~\ref{eq:mult_expansion} can be also be recast graphically, but this time as the sum of an infinite 2-dimensional array (Figure~\ref{fig:2D}). The $i,j=(0,0)$ cell is always zero. The $(1,0)$ and $(0,1)$ cells are the enthalpic components $\langle H_1 \rangle_\lambda$ and $\langle H_2 \rangle_\lambda$, respectively. The sum of the remaining terms is the entropic free energy. 
+Eq.~\ref{eq:split} can be also be recast graphically, but this time as the sum of an infinite 2-dimensional array (Figure~\ref{fig:2D}). The $i,j=(0,0)$ cell is always zero. The $(1,0)$ and $(0,1)$ cells are the enthalpic components $\langle H_1 \rangle_\lambda$ and $\langle H_2 \rangle_\lambda$, respectively. The sum of the remaining terms is the entropic free energy. 
 
-We note that the cumulant of order $n$ in the univariate expansion is the sum of the cumulants where $i+j=n$ in the multivariate expansion, as shown in Figure~\ref{fig:cumsum}.
+%We note that the cumulant of order $n$ in the univariate expansion is the sum of the cumulants where $i+j=n$ in the multivariate expansion, as shown in Figure~\ref{fig:cumsum}.
 
-\begin{figure}[htb]
-\centering
-\includegraphics[width=3in]{figure3.pdf}
-\caption{The multivariate cumulants to a given order sum to the univariate cumulant of the same order.}
-\label{fig:cumsum}
-\end{figure}
+%\begin{figure}[htb]
+%\centering
+%\includegraphics[width=3in]{figure3.pdf}
+%\caption{The multivariate cumulants to a given order sum to the univariate cumulant of the same order.}
+%\label{fig:cumsum}
+%\end{figure}
 
 
-The entropic free energy can further be decomposed (Figure~\ref{fig:2D}) into two univariate marginal entropic contributions, $\mathcal{S}(H_1)$ and $\mathcal{S}(H_2)$, magenta region, and a bivariate joint entropic contribution, $\mathcal{S}(H_1, H_2)$, yellow region.
+The total entropy change can further be decomposed (Figure~\ref{fig:2D}) into two univariate marginal entropic contributions, $\mathcal{S}(H_1)$ and $\mathcal{S}(H_2)$, magenta region, and a bivariate joint entropic contribution, $\mathcal{S}(H_1, H_2)$, yellow region, defined as follows:
+\begin{align}
+\mathcal{\Delta S}(H_1) =& 
+\beta^{-1} \int_0^1 \sum_{i=2}^{\infty} \frac{1}{i!}
+    \left[ D_{i,j=0} \frac{dK_\lambda}{d\lambda}\right]_{t=0} d\lambda , 
+    \\ 
+    \mathcal{\Delta S}(H_2) =& 
+    \beta^{-1} \int_0^1 \sum_{j=2}^{\infty} \frac{1}{j!}
+    \left[ D_{i=0,j} \frac{dK_\lambda}{d\lambda}\right]_{t=0} d\lambda , 
+        \\ 
+    \mathcal{\Delta S}(H1,H_2) =& 
+    \beta^{-1} \int_0^1 \sum_{n=2}^{\infty} \sum_{\substack{i+j=n \\ i\neq0,j\neq0}} \frac{1}{i!j!}
+        \left[ D_{i,j} \frac{dK_\lambda}{d\lambda}\right]_{t=0} d\lambda . 
+\label{eq:mult_expansion}
+\end{align}
 
-This graphical decomposition extends to higher dimensions, although it becomes difficult to visualize. As shown in Figure X, a three component Hamiltonian would have:
+
+This graphical decomposition extends to higher dimensions, although it becomes difficult to visualize. A three component Hamiltonian would have:
 \begin{itemize}
 	\item three enthalpies: $\langle H_1 \rangle_\lambda$, $\langle H_2 \rangle_\lambda$, $\langle H_3 \rangle_\lambda$,
 	\item three univariate entropic contributions: $\mathcal{S}(H_1)$, $\mathcal{S}(H_2)$, $\mathcal{S}(H_3)$,
@@ -239,7 +301,10 @@ This graphical decomposition extends to higher dimensions, although it becomes d
 	\item and a single trivariate entropic contribution: $\mathcal{S}(H_1, H_2, H_3)$.
 \end{itemize}
 
-Note that we use the notation $\mathcal{S}(H_i)$ to indicate the entropic free energy contribution due to $H_i$, rather than the entropy of the random variable $H_i$ itself. Multivariate contributions, like $\mathcal{S}(H_1, H_2)$, include only the cumulant terms where all of the corresponding derivative terms are non-zero. In other words, the $\mathcal{S}(H_1)$ and $\mathcal{S}(H_2)$ terms are not included in $\mathcal{S}(H_1, H_2)$.
+%Note that we use the notation $\mathcal{S}(H_i)$ to indicate the entropic free energy contribution due to $H_i$, rather than the entropy of the random variable $H_i$ itself. Multivariate contributions, like $\mathcal{S}(H_1, H_2)$, include only the cumulant terms where all of the corresponding derivative terms are non-zero. In other words, the $\mathcal{S}(H_1)$ and $\mathcal{S}(H_2)$ terms are not included in $\mathcal{S}(H_1, H_2)$.
+\warning{stopped here}
+
+\clearpage
 
 
 
@@ -842,5 +907,7 @@ leading to
 \end{equation}
 Thus, in the case of identical scaling, the na\"ive scaling given by Eq.~\ref{eq:naive} results in a well-defined splitting of the cumulants. This result is similar to that in previous work.
 
+\bibliographystyle{unsrt}
+\bibliography{DecompRefs}
 
 \end{document}
